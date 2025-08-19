@@ -88,6 +88,9 @@
                         include( $_SERVER['DOCUMENT_ROOT'] . '/pages/addEditFamily.php' );
                     }
                     break;
+                case "export":
+                    include( $_SERVER['DOCUMENT_ROOT'] . '/pages/exportData.php' );
+                    break;
                 default:
                     include( $_SERVER['DOCUMENT_ROOT'] . '/pages/familyGraph.php' );
             }

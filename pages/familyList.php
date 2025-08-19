@@ -37,6 +37,7 @@
                                                 <a href="?action=addEdit" class="btn btn-primary" title="Add">
                                                     Add
                                                 </a>
+                                                <a href="export/exportData.php" class="btn btn-warning" title="Export JSON">Export</a>
                                             </th>
                                         </tr>
                                     </thead>
@@ -50,9 +51,7 @@
                                                             <td><?=$family[ "gender" ];?></td>
                                                             <td><?=$family[ "nickName" ];?></td>
                                                             <td class="text-end">
-                                                                <a href="?action=addEdit&id=<?=$family[ "familyId" ];?>" class="btn btn-warning" title="Edit">
-                                                                    Edit
-                                                                </a>
+                                                                <a href="?action=addEdit&id=<?=$family[ "familyId" ];?>" class="btn btn-warning" title="Edit">Edit</a>
                                                                 <button type="button" 
                                                                     class="btn btn-danger" 
                                                                     title="Delete" 
