@@ -12,7 +12,16 @@
         include( $_SERVER['DOCUMENT_ROOT'] . '/dbconnect.php' );
         $action = array_key_exists( "action", $_GET ) ? strtolower( $_GET[ "action" ] ) : "home";
         $id = isset( $_GET[ 'id' ] ) ? intval( $_GET[ 'id' ] ) : 0;
-        require_once $_SERVER['DOCUMENT_ROOT'] . '/model/familyService.php';
+        require_once $_SERVER['DOCUMENT_ROOT'] . '/model/requestService.php';
+
+        // Get current domain (with protocol)
+        $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' 
+            || $_SERVER['SERVER_PORT'] == 443) ? "https://" : "http://";
+
+        $domain = $_SERVER['HTTP_HOST']; // e.g. example.com
+
+        // Build new URL
+        $newUrl = $protocol . $domain . "/newpage.php";
     ?>
 
     <body class="<?=$action;?>">
@@ -38,14 +47,9 @@
                     include( $_SERVER['DOCUMENT_ROOT'] . '/pages/familyGraph.php' );
                     break;
                 case "list": case 'addedit':
-                    /* $pageTitle = "SignUp";
-                    $customBodyClass = "background-color-bone";
-                    
-                    if( $_SESSION[ "isAdmin" ] != 1 ){
-                        $validateService->redirectToHome( $_config[ "root_path_admin" ] );
-                    } */
 
                     $familyService = new familyService( );
+                    $requestService = new requestService( $_POST);
                     $pageTitle = "Family";
 
                     if( isset( $_POST[ 'deleteId' ] ) && isset( $_POST[ 'deleteType' ] ) ){
@@ -65,7 +69,13 @@
                     } else if( $action == "addedit" ){
                         $parentsData = $familyService->getParents( $familyId = $id );
                         $spousesData = $familyService->getSpouses( $familyId = $id );
-                        
+                        $responceData = $requestService->addEditUpdateFamilyMember();
+
+                        if (isset($responceData['status']) && $responceData['status'] === 'success' && isset($responceData['data']) && $responceData['data'] > 0){
+                            //Redirect('?action=list', false);
+                            echo "<script>window.location.href = '/index.php?action=list';</script>";
+                        }
+
                         if( $id > 0 ){
                             $pageTitle = "Edit " . $pageTitle;
                             $familyData = $familyService->getFamily( $familyId = $id );
@@ -99,4 +109,8 @@
             );
         </script>
     </body>
+
+    <?php
+        require_once $_SERVER['DOCUMENT_ROOT'] . '/pages/deletePopupModal.php';
+    ?>
 </html>

@@ -185,7 +185,11 @@
                 $last_id = 0;
             }
     
-            return $last_id;
+            return [
+                "status" => $last_id > 0 ? "success" : "error", 
+                "messages" => $last_id > 0 ? ["Family inserted successfully"] : ["Failed to insert family"], 
+                "data" => $last_id
+            ];
         }
 
         public function updateFamily(
@@ -229,8 +233,12 @@
             } else {
                 $last_id = 0;
             }
-
-            return $last_id;
+            
+            return [
+                "status" => $last_id > 0 ? "success" : "error", 
+                "messages" => $last_id > 0 ? ["Family updated successfully"] : ["Failed to update family"], 
+                "data" => $last_id
+            ];
         } 
 
         private function updateSpouse( $newId, $spouseId ){

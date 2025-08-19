@@ -196,6 +196,7 @@ function editProfile(isEdit) {
 //ajax call
 function ajaxCall(formData, redirectUrl = '') {
     var returnData = [];
+    var rootPathAdmin = "";
 
     $.ajax({
         type: "POST",
@@ -613,7 +614,7 @@ $(function () {
                 $('div.invalid-js-message', '.' + this.id).css('display', 'none');
             }
         });
-    } else if (document.body.classList.contains('addedit')) {    //  Family page
+    } else if (document.body.classList.contains('addedit_not')) {    //  Family page
         $("form[ name = 'form_addedit' ]").submit(function (e) {
             e.preventDefault();
             var returnMessage = "";
@@ -662,4 +663,3 @@ $(function () {
     }
 
 });
-

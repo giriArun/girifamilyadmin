@@ -1,4 +1,5 @@
 <?php 
+    // Set default values first
     $familyId = 0;
     $name = "";
     $gender = "";
@@ -10,6 +11,7 @@
     $dod = "";
     $isRoot = "";
 
+    // If family data exists, override defaults with family data
     if( count( $familyData ) && $familyData[ "status" ] && is_array( $familyData[ "data" ] ) && count( $familyData[ "data" ] ) == 1 ){
         $data = $familyData[ "data" ][ 0 ];
         
@@ -24,6 +26,20 @@
         $dod = $data[ "dod" ];
         $isRoot = $data[ "isRoot" ];
     }
+
+    // If POST data exists, it takes highest priority
+    if (!empty($_POST)) {
+        $familyId = $_POST['familyId'] ?? $familyId;
+        $name = $_POST['name'] ?? $name;
+        $gender = $_POST['gender'] ?? $gender;
+        $sequence = $_POST['sequence'] ?? $sequence;
+        $parentId = $_POST['parentId'] ?? $parentId;
+        $spouseId = $_POST['spouseId'] ?? $spouseId;
+        $nickName = $_POST['nickName'] ?? $nickName;
+        $dob = $_POST['dob'] ?? $dob;
+        $dod = $_POST['dod'] ?? $dod;
+        $isRoot = isset($_POST['isRoot']) ? '1' : '0';
+    }
 ?>
 
 <section class="mt-5 pt-2">
@@ -35,9 +51,22 @@
                 <div class="row">
                     <div class="col-0 col-sm-1 col-md-1 col-lg-1"></div>
                     <div class="col-12 col-sm-10 col-md-10 col-lg-10 bg-white shadow py-5 px-5">
+                        <?php if (isset($responceData['status']) && $responceData['status'] === 'error'): ?>
+                            <div class="alert alert-danger alert-dismissible fade show mb-4" role="alert">
+                                <?php if (is_array($responceData['messages'])): ?>
+                                    <?php foreach ($responceData['messages'] as $error): ?>
+                                        <div><?= htmlspecialchars($error) ?></div>
+                                    <?php endforeach; ?>
+                                <?php else: ?>
+                                    <?= htmlspecialchars($responceData['messages']) ?>
+                                <?php endif; ?>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        <?php endif; ?>
                         <div class="row">
                             <form class="row g-3 needs-validation" name="form_<?=$action;?>" id="form_<?=$action;?>" method="post" novalidate>
                                 <input type="hidden" name="familyId" value="<?=$familyId;?>">
+                                <input type="hidden" name="isSubmit" value="1">
                                 <div class="col-12 col-sm-12 col-md-6 col-lg-7 col-xxl-7 validationName">
                                     <label for="validationName" class="form-label">Name</label>
                                     <input type="text" class="form-control" id="validationName" name="name" maxlength="200" data-type="string" data-name="Name" value="<?=$name;?>" required>
