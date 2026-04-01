@@ -1,7 +1,23 @@
 <?php
     include( $_SERVER['DOCUMENT_ROOT'] . '/dbconnect.php' );
 
+    $lastModifiedQuery = "SELECT Q.lastModified
+        FROM (
+            (SELECT created_on AS lastModified FROM family ORDER BY created_on DESC LIMIT 1)
+            UNION ALL
+            (SELECT modified_on AS lastModified FROM family ORDER BY modified_on DESC LIMIT 1)
+        ) AS Q ORDER BY Q.lastModified DESC LIMIT 1";
+
+    $lastModifiedResult = mysqli_query($conn, $lastModifiedQuery);
+    $lastModified = null;
+
+    if ($lastModifiedResult && mysqli_num_rows($lastModifiedResult) > 0) {
+        $row = mysqli_fetch_assoc($lastModifiedResult);
+        $lastModified = date("d-m-Y H:i", strtotime($row['lastModified']));
+    }
+
     function getFamilyTree($ids, $conn, $flag = false){
+        global $lastModified;
         $tree = [];
 
         if($flag){
@@ -18,6 +34,7 @@
                 $tempStruct["name"] = $row["name"];
                 $tempStruct["gender"] = $row["gender"];
                 $tempStruct["spouse"] = spouseDetails($row["id"], $conn);
+                $tempStruct["lastModified"] = $lastModified;
                 $sendIds = $row["id"];
 
                 foreach ($tempStruct["spouse"] as $spouse) {
@@ -33,6 +50,7 @@
     }
 
     function spouseDetails($id, $conn){
+        global $lastModified;
         $tree = [];
 
         $sql = "SELECT * FROM family WHERE spouse_id = $id ORDER BY sequence ASC";
@@ -43,6 +61,7 @@
                 $tempStruct["id"] = $row["id"];
                 $tempStruct["name"] = $row["name"];
                 $tempStruct["gender"] = $row["gender"];
+                $tempStruct["lastModified"] = $lastModified;
 
                 array_push( $tree,$tempStruct);
             }
@@ -67,7 +86,7 @@
 
     // Force download
     header('Content-Type: application/json');
-    header('Content-Disposition: attachment; filename="data.json"');
+    header('Content-Disposition: attachment; filename="familyData.json"');
     echo $json;
     exit;
 ?>
